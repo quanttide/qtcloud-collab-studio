@@ -15,6 +15,28 @@ class ActionListScreenState extends State<ActionListScreen> {
   Widget build(BuildContext context) {
     return Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _controller,
+                    decoration: const InputDecoration(
+                      hintText: '添加新的待办事项',
+                    ),
+                    onSubmitted: (value) {
+                      _addTodo();
+                    },
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: _addTodo,
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: _todos.length,
@@ -33,34 +55,17 @@ class ActionListScreenState extends State<ActionListScreen> {
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _controller,
-                    decoration: const InputDecoration(
-                      hintText: '添加新的待办事项',
-                    ),
-                  ),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () {
-                    if (_controller.text.isNotEmpty) {
-                      setState(() {
-                        _todos.add(_controller.text);
-                        _controller.clear();
-                      });
-                    }
-                  },
-                ),
-              ],
-            ),
-          ),
         ],
     );
+  }
+
+  void _addTodo() {
+    if (_controller.text.isNotEmpty) {
+      setState(() {
+        _todos.add(_controller.text);
+        _controller.clear();
+      });
+    }
   }
 
   @override
