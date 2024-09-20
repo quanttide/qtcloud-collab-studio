@@ -1,5 +1,11 @@
 # TODO
 
+## Refactor
+
+### Domain Models
+
+- 使用Freezed重构领域模型。
+
 ## Platform Specific Problems
 
 ### macOS

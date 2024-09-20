@@ -5,10 +5,10 @@
 // 'flutter create' template.
 
 // The application's name. By default this is also the title of the Flutter window.
-PRODUCT_NAME = qtcloud_im_console
+PRODUCT_NAME = qtcloud_collab_studio
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.quanttide.qtcloudImConsole
+PRODUCT_BUNDLE_IDENTIFIER = com.quanttide.qtcloudCollabStudio
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2023 com.quanttide. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2024 com.quanttide. All rights reserved.

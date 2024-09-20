@@ -3,15 +3,18 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+
 import 'screens/home_screen.dart';
 import 'screens/action_list_screen.dart';
+import 'screens/note_list_screen.dart';
 
 
 final List<RouteBase> _routes = [
   ShellRoute(
     builder: (context, state, child) {
+      String title = '量潮协作云'; // 默认标题
       return Scaffold(
-        appBar: AppBar(title: const Text('量潮协作云')),
+        appBar: AppBar(title: Text(title)),
         drawer: NavigationDrawer(
           children: [
             DrawerHeader(
@@ -34,9 +37,13 @@ final List<RouteBase> _routes = [
                 Navigator.pop(context); // 关闭抽屉
               },
             ),
-            const ListTile(
-              leading: Icon(Icons.school),
-              title: Text('笔记'),
+            ListTile(
+              leading: const Icon(Icons.school),
+              title: const Text('笔记'),
+              onTap: () {
+                GoRouter.of(context).go('/notes');
+                Navigator.pop(context); 
+              },
             ),
           ],
         ),
@@ -46,11 +53,15 @@ final List<RouteBase> _routes = [
     routes: [
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomeScreen(title: "首页"),
+        builder: (context, state) => const HomeScreen(title: '首页'),
       ),
       GoRoute(
         path: '/actions',
         builder: (context, state) => const ActionListScreen(),
+      ),
+      GoRoute(
+        path: '/notes',
+        builder: (context, state) => NoteListScreen(),
       )
     ],
   ),
