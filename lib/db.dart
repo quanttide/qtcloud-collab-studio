@@ -1,7 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+
 import 'package:qtcloud_collab_studio/models/action.dart';
+import 'package:qtcloud_collab_studio/models/plan.dart';
+
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -22,20 +27,44 @@ class DatabaseHelper {
     if (kDebugMode) {
       print('Database path: $path');
     } // 打印数据库路径
-    return await openDatabase(path, version: 1, onCreate: _createDatabase);
+    // 检查数据库是否存在
+    final exists = await databaseExists(path);
+    if (!exists) {
+      // 如果数据库不存在，创建数据库
+      return await openDatabase(path, version: 1, onCreate: _createDatabase);
+    } else {
+      // 如果数据库已存在，直接打开数据库
+      return await openDatabase(path);
+    }
   }
 
   Future<void> _createDatabase(Database db, int version) async {
+    // 检查 actions 表是否存在
     await db.execute('''
-      CREATE TABLE actions(
+      CREATE TABLE IF NOT EXISTS actions(
         id TEXT PRIMARY KEY,
         title TEXT, 
         description TEXT
       )
     ''');
+    
+    // 检查 plans 表是否存在
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS plans(
+        id TEXT PRIMARY KEY,
+        title TEXT, 
+        description TEXT
+      )
+    ''');
+    
     if (kDebugMode) {
-      print('Database created');
-    } // 确认数据库创建
+      print('Database created or already exists');
+    } // 确认数据库创建或已存在
+  }
+
+  Future<bool> databaseExists(String path) async {
+    final file = File(path);
+    return await file.exists();
   }
 
   Future<void> insertAction(Action action) async {
@@ -86,5 +115,41 @@ class DatabaseHelper {
     }
   }
 
-  // 其他数据库操作...
+  Future<List<Plan>> getPlans() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('plans'); // 查询计划表
+    
+    // 将查询结果转换为 Plan 对象列表
+    return List.generate(maps.length, (i) {
+      return Plan(
+        id: maps[i]['id'],
+        title: maps[i]['title'],
+        description: maps[i]['description'],
+      );
+    });
+  }
+
+  Future<void> insertPlan(Plan plan) async {
+    final db = await database;
+    await db.insert('plans', plan.toMap()); // 插入计划
+  }
+
+  Future<void> updatePlan(Plan plan) async {
+    final db = await database;
+    await db.update(
+      'plans',
+      plan.toMap(),
+      where: 'id = ?',
+      whereArgs: [plan.id], // 使用 id 作为条件
+    );
+  }
+
+  Future<void> deletePlan(String id) async {
+    final db = await database;
+    await db.delete(
+      'plans',
+      where: 'id = ?',
+      whereArgs: [id], // 使用 id 作为条件
+    );
+  }
 }

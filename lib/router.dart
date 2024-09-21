@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:qtcloud_collab_studio/screens/plan_list_screen.dart';
 
 
 import 'screens/home_screen.dart';
@@ -45,6 +46,14 @@ final List<RouteBase> _routes = [
                 Navigator.pop(context); 
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.abc),
+              title: const Text('计划'),
+              onTap: (){
+                GoRouter.of(context).go('/plans');
+                Navigator.pop(context);
+              },
+            )
           ],
         ),
         body: child,
@@ -62,6 +71,10 @@ final List<RouteBase> _routes = [
       GoRoute(
         path: '/notes',
         builder: (context, state) => NoteListScreen(),
+      ),
+      GoRoute(
+        path: '/plans',
+        builder: (context, state) => const PlanListScreen(),
       )
     ],
   ),
