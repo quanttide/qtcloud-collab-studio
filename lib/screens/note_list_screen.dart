@@ -71,7 +71,7 @@ class NoteListScreenState extends State<NoteListScreen> {
               ],
             ),
             onTap: () {
-              // TODO: 实现打开笔记详情页面
+              
             },
           );
         },

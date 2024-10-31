@@ -39,7 +39,21 @@ class ActionListScreenState extends State<ActionListScreen> {
   Widget _buildActionItem(action_models.Action action) { // 修改为 action_models.Action
     return ListTile(
       title: Text(action.title), // 确保 action 有 title 属性
-      subtitle: Text(action.description),
+      subtitle: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(action.description),
+          Row(
+            children: [
+              Text("负责人: ${action.owner}"),
+              const SizedBox(width: 16), // 添加间距
+              Text("复核人: ${action.reviewer}"),
+            ],
+          ),
+       ],    
+     ),
+
+
       trailing: IconButton(
         icon: const Icon(Icons.delete),
         onPressed: () {
@@ -78,8 +92,8 @@ class ActionListScreenState extends State<ActionListScreen> {
   }
 
   // 修改 _addTodo 方法以接受描述参数
-  void _addTodo(String title, String description) {
-    final action = action_models.Action(title: title, description: description);
+  void _addTodo(String title, String description, String owner, String reviewer) {
+    final action = action_models.Action(title: title, description: description, owner: owner, reviewer: reviewer);
     DatabaseHelper().insertAction(action); // 存储到数据库
     setState(() {
       _actions.add(action);
@@ -93,6 +107,9 @@ class ActionListScreenState extends State<ActionListScreen> {
       builder: (BuildContext context) {
         final TextEditingController titleController = TextEditingController();
         final TextEditingController descriptionController = TextEditingController(); // 新增描述控制器
+        final TextEditingController ownerController = TextEditingController();
+        final TextEditingController reviewerController = TextEditingController();
+        
         return AlertDialog(
           title: const Text('添加待办事项'),
           content: Column(
@@ -106,13 +123,21 @@ class ActionListScreenState extends State<ActionListScreen> {
                 controller: descriptionController, // 新增描述输入框
                 decoration: const InputDecoration(hintText: '输入事项描述'),
               ),
+              TextField(
+                controller: ownerController,
+                decoration: const InputDecoration(hintText: '输入负责人'),
+              ),
+              TextField(
+                controller: reviewerController,
+                decoration: const InputDecoration(hintText: '输入复核人'),
+              )
             ],
           ),
           actions: [
             TextButton(
               onPressed: () {
                 if (titleController.text.isNotEmpty) {
-                  _addTodo(titleController.text, descriptionController.text); // 修改为传递标题和描述
+                  _addTodo(titleController.text, descriptionController.text, ownerController.text, reviewerController.text); // 修改为传递标题和描述
                   Navigator.of(context).pop();
                 }
               },
