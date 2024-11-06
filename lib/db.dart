@@ -45,6 +45,8 @@ class DatabaseHelper {
         id TEXT PRIMARY KEY,
         title TEXT, 
         description TEXT
+        owner TEXT,
+        reviewer TEXT
       )
     ''');
     
@@ -54,6 +56,8 @@ class DatabaseHelper {
         id TEXT PRIMARY KEY,
         title TEXT, 
         description TEXT
+        owner TEXT,
+        reviwer TEXT,
       )
     ''');
     
@@ -94,6 +98,8 @@ class DatabaseHelper {
         id: maps[i]['id'],
         title: maps[i]['title'],
         description: maps[i]['description'],
+        owner: maps[i]['owner'],
+        reviewer: maps[i]['reviewer'],
       );
     });
   }
