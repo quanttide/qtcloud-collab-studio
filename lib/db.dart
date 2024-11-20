@@ -6,7 +6,7 @@ import 'package:path/path.dart';
 
 import 'package:qtcloud_collab_studio/models/action.dart';
 import 'package:qtcloud_collab_studio/models/plan.dart';
-
+import 'package:qtcloud_collab_studio/models/vote.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -58,6 +58,16 @@ class DatabaseHelper {
         description TEXT
         owner TEXT,
         reviwer TEXT,
+      )
+    ''');
+
+     await db.execute('''
+      CREATE TABLE IF NOT EXISTS votes(
+        id TEXT PRIMARY KEY,
+        title TEXT, 
+        description TEXT,
+        option_1 TEXT,
+        option_2 TEXT,
       )
     ''');
     
@@ -157,5 +167,55 @@ class DatabaseHelper {
       where: 'id = ?',
       whereArgs: [id], // 使用 id 作为条件
     );
+  }
+
+   Future<void> insertVote(Vote vote) async {
+    try {
+      final db = await database;
+      if (kDebugMode) {
+        print('Vote inserting: ${vote.toMap()}');
+      }
+      await db.insert('votes', vote.toMap());
+      if (kDebugMode) {
+        print('Vote inserted: ${vote.toMap()}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error inserting vote: $e');
+      } // 打印错误信息
+    }
+  }
+
+  Future<List<Vote>> getVotes() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('votes');
+    
+    // 将查询结果转换为 Vote 对象列表
+    return List.generate(maps.length, (i) {
+      return Vote(
+        id: maps[i]['id'],
+        title: maps[i]['title'],
+        description: maps[i]['description'],
+        option_1: maps[i]['option_1'],
+        option_2: maps[i]['option_2'],
+      );
+    });
+  }
+
+  Future<void> deleteVote(String id) async {
+    final db = await database;
+    if (kDebugMode) {
+      print('Deleting vote with id: $id'); // 添加调试日志
+    }
+    
+    final result = await db.delete(
+      'votes',
+      where: 'id = ?',
+      whereArgs: [id], // 使用 id 作为条件
+    );
+
+    if (kDebugMode) {
+      print('Delete result: $result'); // 打印删除结果
+    }
   }
 }
