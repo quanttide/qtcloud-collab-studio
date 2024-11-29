@@ -8,7 +8,7 @@ import 'package:qtcloud_collab_studio/screens/plan_list_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/action_list_screen.dart';
 import 'screens/note_list_screen.dart';
-
+import 'screens/vote_list_screen.dart';
 
 final List<RouteBase> _routes = [
   ShellRoute(
@@ -53,7 +53,15 @@ final List<RouteBase> _routes = [
                 GoRouter.of(context).go('/plans');
                 Navigator.pop(context);
               },
-            )
+            ),
+            ListTile(
+              leading: const Icon(Icons.how_to_vote),
+              title: const Text('投票'),
+              onTap: () {
+                GoRouter.of(context).go('/votes');
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
         body: child,
@@ -78,6 +86,10 @@ final List<RouteBase> _routes = [
       GoRoute(
         path: '/plans',
         builder: (context, state) => const PlanListScreen(),
+      ),
+      GoRoute(
+        path: '/votes', 
+        builder: (context, state) => const VoteListScreen(),
       )
     ],
   ),
