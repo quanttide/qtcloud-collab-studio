@@ -27,7 +27,7 @@ final List<RouteBase> _routes = [
               leading: const Icon(Icons.school),
               title: const Text('备忘'),
               onTap: () {
-                GoRouter.of(context).go('/notes');
+                GoRouter.of(context).go('/memos');
                 Navigator.pop(context);
               },
             ),
@@ -66,8 +66,8 @@ final List<RouteBase> _routes = [
         builder: (context, state) => const HomeScreen(title: '首页'),
       ),
       GoRoute(
-        path: '/notes',
-        builder: (context, state) => MemoListScreen(),
+        path: '/memos',
+        builder: (context, state) => const MemoListScreen(),
       ),
       GoRoute(
         path: '/tasks',

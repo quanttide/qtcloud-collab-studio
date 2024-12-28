@@ -1,30 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:qtcloud_collab_studio/models/memo.dart';
 import 'package:qtcloud_collab_studio/screens/memo_form_screen.dart';
+import 'package:qtcloud_collab_studio/db.dart';
 
 class MemoListScreen extends StatefulWidget {
-  MemoListScreen({Key? key}) : super(key: key);
-
-  final List<Memo> memos = [
-    Memo(
-        title: '购物清单',
-        content: '牛奶, 面包, 鸡蛋',
-        lastModified: DateTime.now().subtract(const Duration(days: 1))),
-    Memo(
-        title: '会议记录',
-        content: '讨论新项目进度',
-        lastModified: DateTime.now().subtract(const Duration(hours: 3))),
-    Memo(
-        title: '想法',
-        content: '开发一个新的 App',
-        lastModified: DateTime.now().subtract(const Duration(minutes: 30))),
-  ];
+  const MemoListScreen({Key? key})
+      : super(key: key); // Add named parameter here
 
   @override
   MemoListScreenState createState() => MemoListScreenState();
 }
 
 class MemoListScreenState extends State<MemoListScreen> {
+  List<Memo> _memos = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMemos();
+  }
+
+  void _loadMemos() async {
+    final memos = await DatabaseHelper().getMemos();
+    setState(() {
+      _memos = memos;
+    });
+  }
+
+  void _deleteMemo(int id) async {
+    await DatabaseHelper().deleteMemo(id);
+    _loadMemos();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -38,15 +45,8 @@ class MemoListScreenState extends State<MemoListScreen> {
                 context,
                 MaterialPageRoute(
                   builder: (context) => MemoFormScreen(
-                    onSave: (title, content) {
-                      setState(() {
-                        widget.memos.add(Memo(
-                          title: title,
-                          content: content,
-                          lastModified: DateTime.now(),
-                        ));
-                      });
-                    },
+                    dbHelper: DatabaseHelper(),
+                    onSaveComplete: _loadMemos,
                   ),
                 ),
               );
@@ -55,67 +55,35 @@ class MemoListScreenState extends State<MemoListScreen> {
         ],
       ),
       body: ListView.separated(
-        itemCount: widget.memos.length,
+        itemCount: _memos.length,
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(
-              widget.memos[index].title,
+              _memos[index].title,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                Text(_memos[index].content),
                 Text(
-                  widget.memos[index].content,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _formatDate(widget.memos[index].lastModified),
+                  '最后修改时间: ${_memos[index].lastModified}',
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
-            onTap: () {},
+            trailing: IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                if (_memos[index].id != null) {
+                  _deleteMemo(_memos[index].id!);
+                }
+              },
+            ),
           );
         },
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    final now = DateTime.now();
-    final difference = now.difference(date);
-
-    if (difference.inDays == 0) {
-      return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}'; // 今天，显示时间
-    } else if (difference.inDays < 7) {
-      return _getWeekday(date.weekday); // 本周，显示星期几
-    } else {
-      return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}'; // 更早，显示完整日期
-    }
-  }
-
-  String _getWeekday(int weekday) {
-    switch (weekday) {
-      case 1:
-        return '星期一';
-      case 2:
-        return '星期二';
-      case 3:
-        return '星期三';
-      case 4:
-        return '星期四';
-      case 5:
-        return '星期五';
-      case 6:
-        return '星期六';
-      case 7:
-        return '星期日';
-      default:
-        return '';
-    }
   }
 }

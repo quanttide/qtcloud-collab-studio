@@ -7,6 +7,7 @@ import 'package:path/path.dart';
 import 'package:qtcloud_collab_studio/models/task.dart';
 import 'package:qtcloud_collab_studio/models/plan.dart';
 import 'package:qtcloud_collab_studio/models/vote.dart';
+import 'models/memo.dart';
 
 class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
@@ -23,7 +24,7 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'tasks.db');
+    String path = join(await getDatabasesPath(), 'qtcloud_collab.db');
     if (kDebugMode) {
       print('Database path: $path');
     } // 打印数据库路径
@@ -68,6 +69,15 @@ class DatabaseHelper {
         description TEXT,
         option_1 TEXT,
         option_2 TEXT
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS memo(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        title TEXT,
+        content TEXT,
+        lastModified TEXT
       )
     ''');
 
@@ -217,5 +227,36 @@ class DatabaseHelper {
     if (kDebugMode) {
       print('Delete result: $result'); // 打印删除结果
     }
+  }
+
+  Future<List<Memo>> getMemos() async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query('memo');
+    return List.generate(maps.length, (i) {
+      return Memo(
+        id: maps[i]['id'],
+        title: maps[i]['title'],
+        content: maps[i]['content'],
+        lastModified: DateTime.parse(maps[i]['lastModified']),
+      );
+    });
+  }
+
+  Future<void> insertMemo(Memo memo) async {
+    final db = await database;
+    await db.insert(
+      'memo',
+      memo.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<void> deleteMemo(int id) async {
+    final db = await database;
+    await db.delete(
+      'memo',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

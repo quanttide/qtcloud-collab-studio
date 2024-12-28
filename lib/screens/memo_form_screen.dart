@@ -1,66 +1,79 @@
 import 'package:flutter/material.dart';
+import 'package:qtcloud_collab_studio/db.dart';
+import 'package:qtcloud_collab_studio/models/memo.dart';
 
 class MemoFormScreen extends StatefulWidget {
-  final Function(String, String) onSave;
+  final DatabaseHelper dbHelper;
+  final VoidCallback onSaveComplete;
 
-  const MemoFormScreen({Key? key, required this.onSave}) : super(key: key);
+  MemoFormScreen({required this.dbHelper, required this.onSaveComplete});
 
   @override
-  MemoFormScreenState createState() => MemoFormScreenState();
+  _MemoFormScreenState createState() => _MemoFormScreenState();
 }
 
-class MemoFormScreenState extends State<MemoFormScreen> {
-  final _titleController = TextEditingController();
-  final _contentController = TextEditingController();
+class _MemoFormScreenState extends State<MemoFormScreen> {
+  final _formKey = GlobalKey<FormState>();
+  String _title = '';
+  String _content = '';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('编辑笔记'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () {
-              widget.onSave(_titleController.text, _contentController.text);
-              Navigator.pop(context);
-            },
-          ),
-        ],
+        title: Text('添加备忘录'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(
-                labelText: '标题',
-                border: OutlineInputBorder(),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                decoration: InputDecoration(labelText: '标题'),
+                onSaved: (value) {
+                  _title = value!;
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请输入标题';
+                  }
+                  return null;
+                },
               ),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: TextField(
-                controller: _contentController,
-                decoration: const InputDecoration(
-                  labelText: '内容',
-                  border: OutlineInputBorder(),
-                ),
-                maxLines: null,
-                expands: true,
+              TextFormField(
+                decoration: InputDecoration(labelText: '内容'),
+                onSaved: (value) {
+                  _content = value!;
+                },
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请输入内容';
+                  }
+                  return null;
+                },
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    final memo = Memo(
+                      title: _title,
+                      content: _content,
+                      lastModified: DateTime.now(),
+                    );
+                    await widget.dbHelper.insertMemo(memo);
+                    widget.onSaveComplete();
+                    Navigator.pop(context);
+                  }
+                },
+                child: Text('保存'),
+              ),
+            ],
+          ),
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _titleController.dispose();
-    _contentController.dispose();
-    super.dispose();
   }
 }

@@ -21,7 +21,8 @@ class VoteListScreenState extends State<VoteListScreen> {
 
   // 新增：从数据库加载 Vote 数据
   void _loadVotes() async {
-    final votes = await DatabaseHelper().getVotes(); // 假设 getVotes() 返回 List<Vote>
+    final votes =
+        await DatabaseHelper().getVotes(); // 假设 getVotes() 返回 List<Vote>
     setState(() {
       _votes.clear(); // 清空旧数据
       _votes.addAll(votes); // 添加新数据
@@ -35,7 +36,8 @@ class VoteListScreenState extends State<VoteListScreen> {
   }
 
   // 确保 Vote 类型正确
-  Widget _buildVoteItem(vote_models.Vote vote) { // 修改为 vote_models.Vote
+  Widget _buildVoteItem(vote_models.Vote vote) {
+    // 修改为 vote_models.Vote
     return ListTile(
       title: Text(vote.title), // 确保 vote 有 title 属性
       subtitle: Column(
@@ -89,11 +91,12 @@ class VoteListScreenState extends State<VoteListScreen> {
   }
 
   // 修改 _addVote 方法以接受描述参数
-  void _addVote(String title, String description, String option_1, String option_2) {
+  void _addVote(
+      String title, String description, String option_1, String option_2) {
     final vote = vote_models.Vote(
-      title: title, 
+      title: title,
       description: description,
-      option_1: option_1, 
+      option_1: option_1,
       option_2: option_2, // 添加描述
     );
     DatabaseHelper().insertVote(vote); // 存储到数据库
@@ -108,10 +111,13 @@ class VoteListScreenState extends State<VoteListScreen> {
       context: context,
       builder: (BuildContext context) {
         final TextEditingController titleController = TextEditingController();
-        final TextEditingController descriptionController = TextEditingController(); // 新增描述控制器
-        final TextEditingController option_1Controller = TextEditingController(); 
-        final TextEditingController option_2Controller = TextEditingController();
-        
+        final TextEditingController descriptionController =
+            TextEditingController(); // 新增描述控制器
+        final TextEditingController option_1Controller =
+            TextEditingController();
+        final TextEditingController option_2Controller =
+            TextEditingController();
+
         return AlertDialog(
           title: const Text('添加投票'),
           content: Column(
@@ -141,8 +147,8 @@ class VoteListScreenState extends State<VoteListScreen> {
                 if (titleController.text.isNotEmpty) {
                   _addVote(
                     titleController.text,
-                    descriptionController.text, 
-                    option_1Controller.text, 
+                    descriptionController.text,
+                    option_1Controller.text,
                     option_2Controller.text, // 传递描述
                   );
                   Navigator.of(context).pop();
