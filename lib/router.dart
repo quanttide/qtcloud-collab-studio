@@ -4,10 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:qtcloud_collab_studio/screens/plan_list_screen.dart';
 
-
 import 'screens/home_screen.dart';
-import 'screens/action_list_screen.dart';
-import 'screens/note_list_screen.dart';
+import 'screens/task_list_screen.dart';
+import 'screens/memo_list_screen.dart';
 import 'screens/vote_list_screen.dart';
 
 final List<RouteBase> _routes = [
@@ -19,39 +18,25 @@ final List<RouteBase> _routes = [
         drawer: NavigationDrawer(
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Theme.of(context).colorScheme.primary),
-              child: const Text('导航菜单', style: TextStyle(color: Colors.white, fontSize: 24)),
+              decoration:
+                  BoxDecoration(color: Theme.of(context).colorScheme.primary),
+              child: const Text('导航菜单',
+                  style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
             ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('首页'),
+              leading: const Icon(Icons.school),
+              title: const Text('备忘'),
               onTap: () {
-                GoRouter.of(context).go('/');
-                Navigator.pop(context); // 关闭抽屉
+                GoRouter.of(context).go('/notes');
+                Navigator.pop(context);
               },
             ),
             ListTile(
               leading: const Icon(Icons.business),
-              title: const Text('待办'),
+              title: const Text('任务'),
               onTap: () {
-                GoRouter.of(context).go('/actions');
+                GoRouter.of(context).go('/tasks');
                 Navigator.pop(context); // 关闭抽屉
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.school),
-              title: const Text('笔记'),
-              onTap: () {
-                GoRouter.of(context).go('/notes');
-                Navigator.pop(context); 
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.abc),
-              title: const Text('计划'),
-              onTap: (){
-                GoRouter.of(context).go('/plans');
-                Navigator.pop(context);
               },
             ),
             ListTile(
@@ -62,34 +47,39 @@ final List<RouteBase> _routes = [
                 Navigator.pop(context);
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.abc),
+              title: const Text('计划'),
+              onTap: () {
+                GoRouter.of(context).go('/plans');
+                Navigator.pop(context);
+              },
+            ),
           ],
         ),
         body: child,
       );
     },
-
-   
-
     routes: [
       GoRoute(
         path: '/',
         builder: (context, state) => const HomeScreen(title: '首页'),
       ),
       GoRoute(
-        path: '/actions',
-        builder: (context, state) => const ActionListScreen(),
+        path: '/notes',
+        builder: (context, state) => MemoListScreen(),
       ),
       GoRoute(
-        path: '/notes',
-        builder: (context, state) => NoteListScreen(),
+        path: '/tasks',
+        builder: (context, state) => const TaskListScreen(),
+      ),
+      GoRoute(
+        path: '/votes',
+        builder: (context, state) => const VoteListScreen(),
       ),
       GoRoute(
         path: '/plans',
         builder: (context, state) => const PlanListScreen(),
-      ),
-      GoRoute(
-        path: '/votes', 
-        builder: (context, state) => const VoteListScreen(),
       )
     ],
   ),

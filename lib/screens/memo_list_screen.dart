@@ -1,22 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:qtcloud_collab_studio/models/note.dart';
-import 'note_form_screen.dart';  // 添加这一行
+import 'package:qtcloud_collab_studio/models/memo.dart';
+import 'package:qtcloud_collab_studio/screens/memo_form_screen.dart';
 
+class MemoListScreen extends StatefulWidget {
+  MemoListScreen({Key? key}) : super(key: key);
 
-class NoteListScreen extends StatefulWidget {
-  NoteListScreen({Key? key}) : super(key: key);
-
-  final List<Note> notes = [
-    Note(title: '购物清单', content: '牛奶, 面包, 鸡蛋', lastModified: DateTime.now().subtract(const Duration(days: 1))),
-    Note(title: '会议记录', content: '讨论新项目进度', lastModified: DateTime.now().subtract(const Duration(hours: 3))),
-    Note(title: '想法', content: '开发一个新的 App', lastModified: DateTime.now().subtract(const Duration(minutes: 30))),
+  final List<Memo> memos = [
+    Memo(
+        title: '购物清单',
+        content: '牛奶, 面包, 鸡蛋',
+        lastModified: DateTime.now().subtract(const Duration(days: 1))),
+    Memo(
+        title: '会议记录',
+        content: '讨论新项目进度',
+        lastModified: DateTime.now().subtract(const Duration(hours: 3))),
+    Memo(
+        title: '想法',
+        content: '开发一个新的 App',
+        lastModified: DateTime.now().subtract(const Duration(minutes: 30))),
   ];
 
   @override
-  NoteListScreenState createState() => NoteListScreenState();
+  MemoListScreenState createState() => MemoListScreenState();
 }
 
-class NoteListScreenState extends State<NoteListScreen> {
+class MemoListScreenState extends State<MemoListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,10 +37,10 @@ class NoteListScreenState extends State<NoteListScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => NoteFormScreen(
+                  builder: (context) => MemoFormScreen(
                     onSave: (title, content) {
                       setState(() {
-                        widget.notes.add(Note(
+                        widget.memos.add(Memo(
                           title: title,
                           content: content,
                           lastModified: DateTime.now(),
@@ -47,32 +55,30 @@ class NoteListScreenState extends State<NoteListScreen> {
         ],
       ),
       body: ListView.separated(
-        itemCount: widget.notes.length,
+        itemCount: widget.memos.length,
         separatorBuilder: (context, index) => const Divider(height: 1),
         itemBuilder: (context, index) {
           return ListTile(
             title: Text(
-              widget.notes[index].title,
+              widget.memos[index].title,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.notes[index].content,
+                  widget.memos[index].content,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  _formatDate(widget.notes[index].lastModified),
+                  _formatDate(widget.memos[index].lastModified),
                   style: const TextStyle(fontSize: 12, color: Colors.grey),
                 ),
               ],
             ),
-            onTap: () {
-              
-            },
+            onTap: () {},
           );
         },
       ),
@@ -94,14 +100,22 @@ class NoteListScreenState extends State<NoteListScreen> {
 
   String _getWeekday(int weekday) {
     switch (weekday) {
-      case 1: return '星期一';
-      case 2: return '星期二';
-      case 3: return '星期三';
-      case 4: return '星期四';
-      case 5: return '星期五';
-      case 6: return '星期六';
-      case 7: return '星期日';
-      default: return '';
+      case 1:
+        return '星期一';
+      case 2:
+        return '星期二';
+      case 3:
+        return '星期三';
+      case 4:
+        return '星期四';
+      case 5:
+        return '星期五';
+      case 6:
+        return '星期六';
+      case 7:
+        return '星期日';
+      default:
+        return '';
     }
   }
 }

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class NoteFormScreen extends StatefulWidget {
+class MemoFormScreen extends StatefulWidget {
   final Function(String, String) onSave;
 
-  const NoteFormScreen({Key? key, required this.onSave}) : super(key: key);
+  const MemoFormScreen({Key? key, required this.onSave}) : super(key: key);
 
   @override
-  NoteFormScreenState createState() => NoteFormScreenState();
+  MemoFormScreenState createState() => MemoFormScreenState();
 }
 
-class NoteFormScreenState extends State<NoteFormScreen> {
+class MemoFormScreenState extends State<MemoFormScreen> {
   final _titleController = TextEditingController();
   final _contentController = TextEditingController();
 

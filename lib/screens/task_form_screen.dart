@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 
-class ActionFormScreen extends StatelessWidget {
-  const ActionFormScreen({Key? key}) : super(key: key);
+class TaskFormScreen extends StatelessWidget {
+  const TaskFormScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +31,8 @@ class ActionFormScreen extends StatelessWidget {
             TextField(
               controller: ownerController,
               decoration: const InputDecoration(labelText: '负责人'),
-            ),TextField(
+            ),
+            TextField(
               controller: reviewerController,
               decoration: const InputDecoration(labelText: '复核人'),
             ),

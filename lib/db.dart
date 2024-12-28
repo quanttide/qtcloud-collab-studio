@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-import 'package:qtcloud_collab_studio/models/action.dart';
+import 'package:qtcloud_collab_studio/models/task.dart';
 import 'package:qtcloud_collab_studio/models/plan.dart';
 import 'package:qtcloud_collab_studio/models/vote.dart';
 
@@ -23,7 +23,7 @@ class DatabaseHelper {
   }
 
   Future<Database> _initDatabase() async {
-    String path = join(await getDatabasesPath(), 'actions.db');
+    String path = join(await getDatabasesPath(), 'tasks.db');
     if (kDebugMode) {
       print('Database path: $path');
     } // 打印数据库路径
@@ -39,38 +39,38 @@ class DatabaseHelper {
   }
 
   Future<void> _createDatabase(Database db, int version) async {
-    // 检查 actions 表是否存在
+    // 检查 task 表是否存在
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS actions(
+      CREATE TABLE IF NOT EXISTS task(
         id TEXT PRIMARY KEY,
         title TEXT, 
-        description TEXT
+        description TEXT,
         owner TEXT,
         reviewer TEXT
       )
     ''');
-    
-    // 检查 plans 表是否存在
+
+    // 检查 plan 表是否存在
     await db.execute('''
-      CREATE TABLE IF NOT EXISTS plans(
+      CREATE TABLE IF NOT EXISTS plan(
         id TEXT PRIMARY KEY,
         title TEXT, 
-        description TEXT
+        description TEXT,
         owner TEXT,
-        reviwer TEXT,
+        reviewer TEXT
       )
     ''');
 
-     await db.execute('''
-      CREATE TABLE IF NOT EXISTS votes(
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS vote(
         id TEXT PRIMARY KEY,
         title TEXT, 
         description TEXT,
         option_1 TEXT,
-        option_2 TEXT,
+        option_2 TEXT
       )
     ''');
-    
+
     if (kDebugMode) {
       print('Database created or already exists');
     } // 确认数据库创建或已存在
@@ -81,30 +81,30 @@ class DatabaseHelper {
     return await file.exists();
   }
 
-  Future<void> insertAction(Action action) async {
+  Future<void> insertTask(Task task) async {
     try {
       final db = await database;
       if (kDebugMode) {
-        print('Action inserting: ${action.toMap()}');
+        print('Task inserting: ${task.toMap()}');
       }
-      await db.insert('actions', action.toMap());
+      await db.insert('task', task.toMap());
       if (kDebugMode) {
-        print('Action inserted: ${action.toMap()}');
+        print('Task inserted: ${task.toMap()}');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error inserting action: $e');
+        print('Error inserting task: $e');
       } // 打印错误信息
     }
   }
 
-  Future<List<Action>> getActions() async {
+  Future<List<Task>> getTasks() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('actions');
-    
-    // 将查询结果转换为 Action 对象列表
+    final List<Map<String, dynamic>> maps = await db.query('task');
+
+    // 将查询结果转换为 Task 对象列表
     return List.generate(maps.length, (i) {
-      return Action(
+      return Task(
         id: maps[i]['id'],
         title: maps[i]['title'],
         description: maps[i]['description'],
@@ -114,14 +114,14 @@ class DatabaseHelper {
     });
   }
 
-  Future<void> deleteAction(String id) async {
+  Future<void> deleteTask(String id) async {
     final db = await database;
     if (kDebugMode) {
-      print('Deleting action with id: $id'); // 添加调试日志
+      print('Deleting task with id: $id'); // 添加调试日志
     }
-    
+
     final result = await db.delete(
-      'actions',
+      'task',
       where: 'id = ?',
       whereArgs: [id], // 使用 id 作为条件
     );
@@ -133,8 +133,8 @@ class DatabaseHelper {
 
   Future<List<Plan>> getPlans() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('plans'); // 查询计划表
-    
+    final List<Map<String, dynamic>> maps = await db.query('plan'); // 查询计划表
+
     // 将查询结果转换为 Plan 对象列表
     return List.generate(maps.length, (i) {
       return Plan(
@@ -147,13 +147,13 @@ class DatabaseHelper {
 
   Future<void> insertPlan(Plan plan) async {
     final db = await database;
-    await db.insert('plans', plan.toMap()); // 插入计划
+    await db.insert('plan', plan.toMap()); // 插入计划
   }
 
   Future<void> updatePlan(Plan plan) async {
     final db = await database;
     await db.update(
-      'plans',
+      'plan',
       plan.toMap(),
       where: 'id = ?',
       whereArgs: [plan.id], // 使用 id 作为条件
@@ -163,19 +163,19 @@ class DatabaseHelper {
   Future<void> deletePlan(String id) async {
     final db = await database;
     await db.delete(
-      'plans',
+      'plan',
       where: 'id = ?',
       whereArgs: [id], // 使用 id 作为条件
     );
   }
 
-   Future<void> insertVote(Vote vote) async {
+  Future<void> insertVote(Vote vote) async {
     try {
       final db = await database;
       if (kDebugMode) {
         print('Vote inserting: ${vote.toMap()}');
       }
-      await db.insert('votes', vote.toMap());
+      await db.insert('vote', vote.toMap());
       if (kDebugMode) {
         print('Vote inserted: ${vote.toMap()}');
       }
@@ -188,8 +188,8 @@ class DatabaseHelper {
 
   Future<List<Vote>> getVotes() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('votes');
-    
+    final List<Map<String, dynamic>> maps = await db.query('vote');
+
     // 将查询结果转换为 Vote 对象列表
     return List.generate(maps.length, (i) {
       return Vote(
@@ -207,9 +207,9 @@ class DatabaseHelper {
     if (kDebugMode) {
       print('Deleting vote with id: $id'); // 添加调试日志
     }
-    
+
     final result = await db.delete(
-      'votes',
+      'vote',
       where: 'id = ?',
       whereArgs: [id], // 使用 id 作为条件
     );
